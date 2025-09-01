@@ -21,9 +21,9 @@ RUN apt-get update && apt-get install -y \
     hunspell-en-us \
     && rm -rf /var/lib/apt/lists/*
 
-# Symlink libleptonica to expected name
-RUN ln -sf /usr/lib/x86_64-linux-gnu/liblept.so.5 /usr/lib/libleptonica-1.82.0.so \
-    && ln -sf /usr/lib/x86_64-linux-gnu/liblept.so.5 /usr/lib/x86_64-linux-gnu/libleptonica-1.82.0.so
+# Symlink libleptonica to expected name (correct dir)
+RUN ln -sf /usr/lib/x86_64-linux-gnu/liblept.so.5 \
+           /usr/lib/x86_64-linux-gnu/libleptonica-1.82.0.so
 
 # Export library path for .NET Tesseract
 ENV LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH
