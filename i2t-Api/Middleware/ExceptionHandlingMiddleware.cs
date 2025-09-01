@@ -20,7 +20,15 @@ namespace i2t.Middleware
             catch (Exception ex)
             {
                 context.Response.StatusCode = 500;
-                await context.Response.WriteAsJsonAsync(new { error = ex.Message });
+
+                var errorDetails = new
+                {
+                    message = ex.Message,
+                    inner = ex.InnerException?.Message,
+                    stack = ex.StackTrace
+                };
+
+                await context.Response.WriteAsJsonAsync(errorDetails);
             }
         }
     }
