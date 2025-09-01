@@ -21,9 +21,14 @@ RUN apt-get update && apt-get install -y \
     hunspell-en-us \
     && rm -rf /var/lib/apt/lists/*
 
-# Auto-detect installed liblept version and symlink to what Tesseract.NET expects
-RUN LIBREAL=$(ls /usr/lib/x86_64-linux-gnu/lib*lept*.so* | head -n 1) \
-    && ln -sf $LIBREAL /usr/lib/x86_64-linux-gnu/libleptonica-1.82.0.so
+# Debug: print out available liblept libraries
+RUN ls -l /usr/lib/x86_64-linux-gnu | grep lept || true
+
+# Force symlink to what Tesseract.NET expects
+RUN REAL_LIB=$(ls /usr/lib/x86_64-linux-gnu/lib*lept*.so* | head -n 1) \
+    && echo "Found: $REAL_LIB" \
+    && ln -sf $REAL_LIB /usr/lib/x86_64-linux-gnu/libleptonica-1.82.0.so \
+    && ls -l /usr/lib/x86_64-linux-gnu/libleptonica-1.82.0.so
 
 # Export library path for .NET Tesseract
 ENV LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH
