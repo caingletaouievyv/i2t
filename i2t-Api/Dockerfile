@@ -13,5 +13,12 @@ RUN dotnet publish "i2t-Api.csproj" -c Release -o /app/publish
 # Runtime stage
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
+
+# Copy published app
 COPY --from=build /app/publish .
+
+# Explicitly copy tessdata + dictionaries (important for Tesseract!)
+COPY i2t-Api/tessdata ./tessdata
+COPY i2t-Api/Dictionaries ./Dictionaries
+
 ENTRYPOINT ["dotnet", "i2t-Api.dll"]
