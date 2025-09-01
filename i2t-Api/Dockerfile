@@ -24,15 +24,12 @@ RUN apt-get update && apt-get install -y \
     hunspell-en-us \
     && rm -rf /var/lib/apt/lists/*
 
-# Debug: list what we actually have
-RUN ls -l /usr/lib/x86_64-linux-gnu | grep lept || true
+# Find actual liblept version and symlink to expected name
+RUN lept_lib=$(ldconfig -p | grep liblept.so | head -n1 | awk '{print $4}') \
+    && echo "Found $lept_lib" \
+    && ln -sf $lept_lib /usr/lib/x86_64-linux-gnu/libleptonica-1.82.0.so
 
-# Create symlink for .NET binding
-RUN realpath /usr/lib/x86_64-linux-gnu/liblept.so.5 \
-    && ln -s $(realpath /usr/lib/x86_64-linux-gnu/liblept.so.5) \
-       /usr/lib/x86_64-linux-gnu/libleptonica-1.82.0.so || true
-
-# Copy from *named build stage*
+# Copy published app
 COPY --from=build /app/publish .
 
 # Copy tessdata (OCR models)
