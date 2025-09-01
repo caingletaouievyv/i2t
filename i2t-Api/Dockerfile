@@ -1,14 +1,3 @@
-# Build stage
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-WORKDIR /src
-
-# Copy everything
-COPY . .
-
-# Restore and publish
-RUN dotnet restore i2t-Api/i2t-Api.csproj
-RUN dotnet publish i2t-Api/i2t-Api.csproj -c Release -o /app/publish
-
 # Runtime stage
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
@@ -20,10 +9,13 @@ RUN apt-get update && apt-get install -y \
     libleptonica-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Create symlink so Tesseract.NET finds the expected lib name
-RUN ln -s /usr/lib/x86_64-linux-gnu/liblept.so.5 /usr/lib/x86_64-linux-gnu/libleptonica-1.82.0.so
+# Debug: show what libraries actually exist
+RUN ls -l /usr/lib/x86_64-linux-gnu | grep lept || true
 
-# Copy published app from build stage
+# Create symlink so .NET binding finds expected name
+RUN ln -s /usr/lib/x86_64-linux-gnu/liblept.so.5 /usr/lib/x86_64-linux-gnu/libleptonica-1.82.0.so || true
+
+# Copy published app
 COPY --from=build /app/publish .
 
 # Copy tessdata (make sure it exists in your repo)
