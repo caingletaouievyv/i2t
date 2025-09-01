@@ -2,12 +2,10 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-# Copy csproj and restore
-COPY i2t-Api/*.csproj ./ 
+COPY i2t-Api/*.csproj ./
 RUN dotnet restore "i2t-Api.csproj"
 
-# Copy source and publish
-COPY i2t-Api/. ./ 
+COPY i2t-Api/. ./
 RUN dotnet publish "i2t-Api.csproj" -c Release -o /app/publish
 
 # Runtime stage
@@ -23,15 +21,15 @@ RUN apt-get update && apt-get install -y \
     hunspell-en-us \
     && rm -rf /var/lib/apt/lists/*
 
-# Symlink for .NET Tesseract binding
-RUN lept_lib=$(ldconfig -p | grep liblept.so | head -n1 | awk '{print $4}') \
-    && ln -sf $lept_lib /usr/lib/libleptonica-1.82.0.so \
-    && ln -sf $lept_lib /usr/lib/x86_64-linux-gnu/libleptonica-1.82.0.so
+# Symlink libleptonica so .NET Tesseract finds it
+RUN if [ -f /usr/lib/x86_64-linux-gnu/liblept.so.5 ]; then \
+        ln -sf /usr/lib/x86_64-linux-gnu/liblept.so.5 /usr/lib/x86_64-linux-gnu/libleptonica-1.82.0.so; \
+    fi
 
-# Copy from the named build stage explicitly
+# Copy app from build stage
 COPY --from=build /app/publish .
 
-# Copy tessdata
+# Copy tessdata models
 COPY i2t-Api/tessdata /usr/share/tesseract-ocr/4.00/tessdata
 ENV TESSDATA_PREFIX=/usr/share/tesseract-ocr/4.00/tessdata
 
