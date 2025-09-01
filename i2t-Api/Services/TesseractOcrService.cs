@@ -39,7 +39,7 @@ namespace i2t.Services
                 await using (var stream = File.Create(tempFilePath))
                     await imageFile.CopyToAsync(stream);
 
-                var tessDataPath = Path.Combine(Directory.GetCurrentDirectory(), "tessdata");
+                var tessDataPath = Path.Combine(AppContext.BaseDirectory, "tessdata");
                 if (!Directory.Exists(tessDataPath))
                     throw new Exception($"Tessdata folder not found at {tessDataPath}");
 
