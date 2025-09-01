@@ -13,8 +13,8 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", builder =>
     builder.WithOrigins(
-        "http://localhost:5173"//,//local
-        //""
+        "http://localhost:5173",//local
+        "https://i2t.netlify.app"//netlify
     ).AllowAnyMethod()
      .AllowAnyHeader());
 });
