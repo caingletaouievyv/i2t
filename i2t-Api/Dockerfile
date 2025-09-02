@@ -33,6 +33,12 @@ RUN wget http://www.leptonica.org/source/leptonica-1.82.0.tar.gz \
     && ldconfig \
     && cd .. && rm -rf leptonica-1.82.0*
 
+# Ensure exact name exists
+RUN ls -l /usr/lib/x86_64-linux-gnu/lib*lept* \
+    && REAL_LIB=$(ls /usr/lib/x86_64-linux-gnu/lib*lept*.so* | head -n 1) \
+    && ln -sf $REAL_LIB /usr/lib/x86_64-linux-gnu/libleptonica-1.82.0.so \
+    && ls -l /usr/lib/x86_64-linux-gnu/libleptonica-1.82.0.so
+
 # Reset workdir for app
 WORKDIR /app
 
