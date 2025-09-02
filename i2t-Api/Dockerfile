@@ -33,10 +33,10 @@ RUN wget http://www.leptonica.org/source/leptonica-1.82.0.tar.gz \
     && cd .. && rm -rf leptonica-1.82.0*
 
 # Ensure expected library names exist for .NET interop
-RUN REAL_LIB=$(ls /usr/lib/x86_64-linux-gnu/lib*lept.so.* | head -n 1) \
-    && ln -sf $REAL_LIB /usr/lib/x86_64-linux-gnu/libleptonica-1.82.0.so \
-    && ln -sf $REAL_LIB /usr/lib/x86_64-linux-gnu/libleptonica.so \
-    && ln -sf $REAL_LIB /usr/lib/x86_64-linux-gnu/liblept.so.5 \
+RUN REAL_LIB=$(ls /usr/lib/x86_64-linux-gnu/lib*lept.so.[0-9]* | head -n 1) \
+    && cp $REAL_LIB /usr/lib/x86_64-linux-gnu/libleptonica-1.82.0.so \
+    && cp $REAL_LIB /usr/lib/x86_64-linux-gnu/libleptonica.so \
+    && cp $REAL_LIB /usr/lib/x86_64-linux-gnu/liblept.so.5 \
     && ldconfig \
     && ls -l /usr/lib/x86_64-linux-gnu/lib*lept*
 
