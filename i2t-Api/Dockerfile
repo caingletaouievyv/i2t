@@ -8,26 +8,33 @@ RUN dotnet restore "i2t-Api.csproj"
 COPY i2t-Api/. ./
 RUN dotnet publish "i2t-Api.csproj" -c Release -o /app/publish
 
+
 # Runtime stage
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
 
-# Install Tesseract + dependencies
+# Install dependencies for building Leptonica + Tesseract
 RUN apt-get update && apt-get install -y \
     tesseract-ocr \
     libtesseract-dev \
-    libleptonica-dev \
     hunspell \
     hunspell-en-us \
+    autoconf automake libtool pkg-config g++ make wget \
     && rm -rf /var/lib/apt/lists/*
 
-# Show what liblept was installed
-RUN ls -l /usr/lib/x86_64-linux-gnu/lib*lept*
+# Build and install Leptonica 1.82.0
+WORKDIR /tmp
+RUN wget http://www.leptonica.org/source/leptonica-1.82.0.tar.gz \
+    && tar -xvzf leptonica-1.82.0.tar.gz \
+    && cd leptonica-1.82.0 \
+    && ./configure --prefix=/usr --libdir=/usr/lib/x86_64-linux-gnu \
+    && make -j$(nproc) \
+    && make install \
+    && ldconfig \
+    && cd .. && rm -rf leptonica-1.82.0*
 
-# Force symlink to match what Tesseract.NET expects
-RUN ln -sf /usr/lib/x86_64-linux-gnu/liblept.so.5 \
-           /usr/lib/x86_64-linux-gnu/libleptonica-1.82.0.so \
-    && ls -l /usr/lib/x86_64-linux-gnu/libleptonica-1.82.0.so
+# Reset workdir for app
+WORKDIR /app
 
 # Export library path
 ENV LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH
