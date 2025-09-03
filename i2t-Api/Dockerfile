@@ -33,14 +33,13 @@ RUN wget http://www.leptonica.org/source/leptonica-1.82.0.tar.gz \
     && cd .. && rm -rf leptonica-1.82.0*
 
 # Ensure expected library names exist for .NET interop
-RUN REAL_LIB=$(ls -1 /usr/lib/x86_64-linux-gnu/lib*lept.so.*.*.* | head -n 1) \
+RUN REAL_LIB=$(ls -1 /usr/lib/x86_64-linux-gnu/liblept.so.*.*.* | head -n 1) \
     && cp -f $REAL_LIB /usr/lib/x86_64-linux-gnu/libleptonica-1.82.0.so \
     && ln -sf /usr/lib/x86_64-linux-gnu/libleptonica-1.82.0.so /usr/lib/libleptonica-1.82.0.so \
     && ln -sf /usr/lib/x86_64-linux-gnu/libleptonica-1.82.0.so /usr/lib/libleptonica.so \
-    && echo "/usr/lib/x86_64-linux-gnu" > /etc/ld.so.conf.d/x86_64-libs.conf \
-    && echo "/usr/lib" >> /etc/ld.so.conf.d/x86_64-libs.conf \
-    && ldconfig -v | grep lept \
-    && ls -l /usr/lib*/*lept*
+    && ldconfig \
+    && ls -l /usr/lib*/*lept* /usr/lib*/*leptonica*
+
 
 # Reset workdir for app
 WORKDIR /app
