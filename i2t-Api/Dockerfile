@@ -45,7 +45,10 @@ RUN REAL_LIB=$(find /usr/lib/x86_64-linux-gnu -name "liblept.so.*" | head -n 1) 
 WORKDIR /app
 
 # Export library path
-ENV LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH
+ENV LD_LIBRARY_PATH=/usr/lib:/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH
+
+# Copy actual library to app folder (InteropDotNet looks here first)
+RUN cp /usr/lib/x86_64-linux-gnu/liblept.so.5 /app/libleptonica-1.82.0.so
 
 # Copy app from build stage
 COPY --from=build /app/publish .
