@@ -12,9 +12,6 @@ RUN dotnet publish "i2t-Api.csproj" -c Release -o /app/publish
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
 
-ldd /app/libleptonica-1.82.0.so
-ldconfig -p | grep -E 'lept|png|jpeg|tiff|webp|openjp2|gif|z'
-
 # 1) Base tools + tesseract + build toolchain
 RUN apt-get update && apt-get install -y \
     tesseract-ocr \
