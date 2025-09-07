@@ -10,7 +10,6 @@
 		<PackageReference Include="SixLabors.ImageSharp" Version="3.*" />
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="9.0.3" />
 		<PackageReference Include="Tesseract" Version="5.2.0" />
-		<PackageReference Include="Tesseract.runtime.linux-x64" Version="5.2.0.2004" />
 		<PackageReference Include="WeCantSpell.Hunspell" Version="6.0.1" />
 	</ItemGroup>
 
