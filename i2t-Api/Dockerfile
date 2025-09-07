@@ -21,8 +21,10 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Find actual liblept installed and hard copy it to the name wrapper expects
-RUN ln -sf /usr/lib/x86_64-linux-gnu/liblept.so.5 /app/libleptonica-1.82.0.so \
- && ln -sf /usr/lib/x86_64-linux-gnu/liblept.so.5 /usr/lib/x86_64-linux-gnu/libleptonica-1.82.0.so \
+RUN ln -sf /usr/lib/x86_64-linux-gnu/liblept.so.5 \
+           /usr/lib/x86_64-linux-gnu/libleptonica-1.82.0.so \
+ && ln -sf /usr/lib/x86_64-linux-gnu/liblept.so.5 \
+           /app/libleptonica-1.82.0.so \
  && ldconfig \
  && ls -l /usr/lib/x86_64-linux-gnu/*lept* /usr/lib/x86_64-linux-gnu/*leptonica* /app/*leptonica*
 
