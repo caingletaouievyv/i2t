@@ -20,9 +20,11 @@ RUN apt-get update && apt-get install -y \
     hunspell-en-us \
     && rm -rf /var/lib/apt/lists/*
 
-RUN ln -sf /usr/lib/x86_64-linux-gnu/liblept.so.5 /usr/lib/x86_64-linux-gnu/libleptonica-1.82.0.so \
- && cp -f /usr/lib/x86_64-linux-gnu/liblept.so.5 /app/libleptonica-1.82.0.so \
- && ldconfig
+# Ensure libleptonica-1.82.0.so exists in BOTH /usr/lib and /app
+RUN cp -f /usr/lib/x86_64-linux-gnu/liblept.so.5 /app/libleptonica-1.82.0.so \
+ && ln -sf /app/libleptonica-1.82.0.so /usr/lib/x86_64-linux-gnu/libleptonica-1.82.0.so \
+ && ldconfig \
+ && ls -l /app/libleptonica-1.82.0.so /usr/lib/x86_64-linux-gnu/libleptonica-1.82.0.so
 
 ENV LD_LIBRARY_PATH=/app:/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH
 
