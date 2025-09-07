@@ -20,25 +20,23 @@ RUN apt-get update && apt-get install -y \
     hunspell-en-us \
     && rm -rf /var/lib/apt/lists/*
 
-# Symlink so .NET can find expected filename
-RUN ln -sf /usr/lib/x86_64-linux-gnu/liblept.so.5 \
-           /usr/lib/x86_64-linux-gnu/libleptonica-1.82.0.so
+# Find the real Leptonica .so and symlink it as libleptonica-1.82.0.so
+RUN REAL_LIB=$(find /usr/lib/x86_64-linux-gnu -name "libleptonica.so.*" | head -n 1) \
+ && ln -sf $REAL_LIB /usr/lib/x86_64-linux-gnu/libleptonica-1.82.0.so \
+ && cp -f $REAL_LIB /app/libleptonica-1.82.0.so \
+ && ldconfig \
+ && ls -l /usr/lib/x86_64-linux-gnu/*leptonica*
 
 ENV LD_LIBRARY_PATH=/app:/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH
 
 COPY --from=build /app/publish .
 
-# Extra copy for InteropDotNet probing
-RUN cp -f /usr/lib/x86_64-linux-gnu/liblept.so.5 /app/libleptonica-1.82.0.so \
- && ldconfig
-
-# Sanity check: fail build if the library isn't in place
-RUN test -f /usr/lib/x86_64-linux-gnu/libleptonica-1.82.0.so \
- && test -f /app/libleptonica-1.82.0.so
-
 COPY i2t-Api/tessdata /usr/share/tesseract-ocr/4.00/tessdata
 ENV TESSDATA_PREFIX=/usr/share/tesseract-ocr/4.00/tessdata
 
 COPY i2t-Api/Dictionaries /usr/share/hunspell
+
+# Verify the library is resolvable before finalizing the image
+RUN ldd /usr/lib/x86_64-linux-gnu/libleptonica-1.82.0.so
 
 ENTRYPOINT ["dotnet", "i2t-Api.dll"]
