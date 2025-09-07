@@ -20,13 +20,9 @@ RUN apt-get update && apt-get install -y \
     hunspell-en-us \
     && rm -rf /var/lib/apt/lists/*
 
-# Symlink and copy correct Leptonica lib
-RUN REAL_LIB=$(find /usr/lib/x86_64-linux-gnu -name "libleptonica.so.*" | head -n 1) \
- && echo "Using $REAL_LIB" \
- && ln -sf "$REAL_LIB" /usr/lib/x86_64-linux-gnu/libleptonica-1.82.0.so \
- && cp -f "$REAL_LIB" /app/libleptonica-1.82.0.so \
- && ldconfig \
- && ls -l /usr/lib/x86_64-linux-gnu/*leptonica*
+RUN ln -sf /usr/lib/x86_64-linux-gnu/liblept.so.5 /usr/lib/x86_64-linux-gnu/libleptonica-1.82.0.so \
+ && cp -f /usr/lib/x86_64-linux-gnu/liblept.so.5 /app/libleptonica-1.82.0.so \
+ && ldconfig
 
 ENV LD_LIBRARY_PATH=/app:/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH
 
