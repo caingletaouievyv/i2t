@@ -20,9 +20,9 @@ RUN apt-get update && apt-get install -y \
     hunspell-en-us \
     && rm -rf /var/lib/apt/lists/*
 
-# Make sure both symlink + real file exist
-RUN ln -sf /usr/lib/x86_64-linux-gnu/liblept.so.5 \
-           /usr/lib/x86_64-linux-gnu/libleptonica-1.82.0.so \
+# Ensure libleptonica-1.82.0.so exists as a real file in both /usr/lib and /app
+RUN cp -f /usr/lib/x86_64-linux-gnu/liblept.so.5 \
+         /usr/lib/x86_64-linux-gnu/libleptonica-1.82.0.so \
  && cp -f /usr/lib/x86_64-linux-gnu/liblept.so.5 \
          /app/libleptonica-1.82.0.so \
  && ldconfig \
