@@ -21,9 +21,10 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Force symlink to match what the wrapper expects
+# Force exact file copy so wrapper can find it
 RUN REAL_LIB=$(find /usr/lib/x86_64-linux-gnu -name "liblept.so.*" | head -n 1) \
- && ln -sf "$REAL_LIB" /usr/lib/x86_64-linux-gnu/libleptonica-1.82.0.so \
- && ln -sf "$REAL_LIB" /app/libleptonica-1.82.0.so \
+ && cp "$REAL_LIB" /usr/lib/x86_64-linux-gnu/libleptonica-1.82.0.so \
+ && cp "$REAL_LIB" /app/libleptonica-1.82.0.so \
  && ldconfig \
  && ls -l /usr/lib/x86_64-linux-gnu/*lept* /usr/lib/x86_64-linux-gnu/*leptonica* /app/*leptonica*
 
