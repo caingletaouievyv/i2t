@@ -22,9 +22,9 @@ RUN apt-get update && apt-get install -y \
     hunspell-en-us \
     && rm -rf /var/lib/apt/lists/*
 
-# Ensure .NET finds exactly the filename it expects
-RUN ln -s /usr/lib/x86_64-linux-gnu/liblept.so.5 \
-          /usr/lib/x86_64-linux-gnu/libleptonica-1.82.0.so
+# Ensure .NET finds the expected filename
+RUN cp /usr/lib/x86_64-linux-gnu/liblept.so.5 \
+       /usr/lib/x86_64-linux-gnu/libleptonica-1.82.0.so
 
 # Add app folder to library search path
 ENV LD_LIBRARY_PATH=/app:/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH
