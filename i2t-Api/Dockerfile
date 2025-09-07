@@ -20,10 +20,11 @@ RUN apt-get update && apt-get install -y \
     hunspell-en-us \
     && rm -rf /var/lib/apt/lists/*
 
-# Find the real Leptonica .so and symlink it as libleptonica-1.82.0.so
+# Symlink and copy correct Leptonica lib
 RUN REAL_LIB=$(find /usr/lib/x86_64-linux-gnu -name "libleptonica.so.*" | head -n 1) \
- && ln -sf $REAL_LIB /usr/lib/x86_64-linux-gnu/libleptonica-1.82.0.so \
- && cp -f $REAL_LIB /app/libleptonica-1.82.0.so \
+ && echo "Using $REAL_LIB" \
+ && ln -sf "$REAL_LIB" /usr/lib/x86_64-linux-gnu/libleptonica-1.82.0.so \
+ && cp -f "$REAL_LIB" /app/libleptonica-1.82.0.so \
  && ldconfig \
  && ls -l /usr/lib/x86_64-linux-gnu/*leptonica*
 
