@@ -29,10 +29,13 @@ ENV LD_LIBRARY_PATH=/app:/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH
 
 COPY --from=build /app/publish .
 
+RUN cp /usr/lib/x86_64-linux-gnu/liblept.so.5 /app/libleptonica-1.82.0.so \
+ && ln -s /usr/lib/x86_64-linux-gnu/liblept.so.5 /usr/lib/x86_64-linux-gnu/libleptonica-1.82.0.so \
+ && ldconfig
+
 COPY i2t-Api/tessdata /usr/share/tesseract-ocr/4.00/tessdata
 ENV TESSDATA_PREFIX=/usr/share/tesseract-ocr/4.00/tessdata
 
 COPY i2t-Api/Dictionaries /usr/share/hunspell
 
-# Fail if .NET's expected lib name not found
-ENTRYPOINT ["/bin/sh", "-c", "ldd /usr/lib/x86_64-linux-gnu/libleptonica-1.82.0.so || exit 1; dotnet i2t-Api.dll"]
+ENTRYPOINT ["dotnet", "i2t-Api.dll"]
