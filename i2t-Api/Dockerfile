@@ -13,7 +13,7 @@ RUN dotnet publish "i2t-Api.csproj" -c Release -o /app/publish
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
 
-# Install Tesseract + Leptonica (already 1.82.0 in Debian) + Hunspell
+# Install Tesseract + Leptonica (Debian ships 1.82.0) + Hunspell
 RUN apt-get update && apt-get install -y \
     tesseract-ocr \
     libtesseract-dev \
@@ -22,11 +22,7 @@ RUN apt-get update && apt-get install -y \
     hunspell-en-us \
     && rm -rf /var/lib/apt/lists/*
 
-# Ensure .NET finds the expected filename
-RUN cp /usr/lib/x86_64-linux-gnu/liblept.so.5 \
-       /usr/lib/x86_64-linux-gnu/libleptonica-1.82.0.so
-
-# Add app folder to library search path
+# Add app folder to library search path (safety)
 ENV LD_LIBRARY_PATH=/app:/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH
 
 # Copy published app
