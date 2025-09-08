@@ -34,8 +34,9 @@ RUN git clone --branch 1.82.0 https://github.com/DanBloomberg/leptonica.git /tmp
     && ./configure \
     && make \
     && make install \
+    && cp /usr/local/lib/liblept.so.5 /app/libleptonica-1.82.0.so \
     && cp /usr/local/lib/liblept.so.5 /usr/lib/x86_64-linux-gnu/libleptonica-1.82.0.so \
-    && chmod 755 /usr/lib/x86_64-linux-gnu/libleptonica-1.82.0.so \
+    && chmod 755 /app/libleptonica-1.82.0.so /usr/lib/x86_64-linux-gnu/libleptonica-1.82.0.so \
     && ldconfig \
     && rm -rf /tmp/leptonica
 
@@ -48,6 +49,6 @@ COPY i2t-Api/Dictionaries /app/Dictionaries
 
 # OCR environment variables
 ENV TESSDATA_PREFIX=/app/tessdata
-ENV LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH
+ENV LD_LIBRARY_PATH=/app:/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH
 
 ENTRYPOINT ["dotnet", "i2t-Api.dll"]
