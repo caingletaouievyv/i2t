@@ -21,8 +21,8 @@ RUN apt-get update && apt-get install -y \
     hunspell-en-us \
     && rm -rf /var/lib/apt/lists/*
 
-# Symlink so wrapper finds the expected name
-RUN ln -s /usr/lib/x86_64-linux-gnu/liblept.so.5 /usr/lib/x86_64-linux-gnu/libleptonica-1.82.0.so
+# Symlink to match Tesseract .NET wrapper expectations
+RUN ln -s /usr/lib/x86_64-linux-gnu/liblept.so.5 /app/libleptonica-1.82.0.so
 
 # Copy published app
 COPY --from=build /app/publish .
@@ -33,6 +33,6 @@ COPY i2t-Api/Dictionaries /app/Dictionaries
 
 # OCR env vars
 ENV TESSDATA_PREFIX=/app/tessdata
-ENV LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH
+ENV LD_LIBRARY_PATH=/app:/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH
 
 ENTRYPOINT ["dotnet", "i2t-Api.dll"]
