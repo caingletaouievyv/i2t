@@ -40,7 +40,7 @@ RUN git clone --branch 1.82.0 https://github.com/DanBloomberg/leptonica.git /tmp
     && rm -rf /tmp/leptonica
 
 # Copy published app from build stage
-COPY --from=build /app/publish ./
+COPY --from=build /app/publish ./ 
 
 # Copy tessdata and dictionaries
 COPY i2t-Api/tessdata /app/tessdata
@@ -48,6 +48,6 @@ COPY i2t-Api/Dictionaries /app/Dictionaries
 
 # OCR environment variables
 ENV TESSDATA_PREFIX=/app/tessdata
-ENV LD_LIBRARY_PATH=/app:/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH
+ENV LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH
 
 ENTRYPOINT ["dotnet", "i2t-Api.dll"]
