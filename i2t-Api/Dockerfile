@@ -26,15 +26,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN git clone --branch 1.82.0 https://github.com/DanBloomberg/leptonica.git /tmp/leptonica \
     && cd /tmp/leptonica \
     && ./autogen.sh \
-    && ./configure --prefix=/app/leptonica \
+    && ./configure \
     && make \
     && make install \
-    && ln -sf $(find /app/leptonica/lib -name "liblept.so.5") /app/libleptonica-1.82.0.so \
-    && chmod 755 /app/libleptonica-1.82.0.so \
-    # Debug: list what was installed
-    && ls -l /app && ls -l /app/leptonica/lib \
-    # Fail fast if the library is missing
-    && test -f /app/libleptonica-1.82.0.so \
+    # Create system-wide symlinks for the expected name
+    && ln -sf /usr/local/lib/liblept.so.5 /usr/lib/x86_64-linux-gnu/libleptonica-1.82.0.so \
+    && ln -sf /usr/local/lib/liblept.so.5 /app/libleptonica-1.82.0.so \
+    && ldconfig \
+    && ls -l /usr/local/lib/ /usr/lib/x86_64-linux-gnu/ /app \
     && rm -rf /tmp/leptonica
 
 # Copy published app from build stage
