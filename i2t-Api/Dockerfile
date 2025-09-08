@@ -12,8 +12,9 @@ RUN dotnet publish "i2t-Api.csproj" -c Release -o /app/publish
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
 
-# Install build deps, Tesseract, Hunspell
+# Install build deps, Tesseract, Hunspell, and git
 RUN apt-get update && apt-get install -y \
+    git \
     autoconf automake libtool pkg-config \
     build-essential \
     tesseract-ocr \
