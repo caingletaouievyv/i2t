@@ -1,4 +1,19 @@
 # -------------------
+# Build stage (compile app)
+# -------------------
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+WORKDIR /src
+
+# Copy project files and restore
+COPY i2t-Api/*.csproj ./
+RUN dotnet restore "i2t-Api.csproj"
+
+# Copy source and publish
+COPY i2t-Api/. ./
+RUN dotnet publish "i2t-Api.csproj" -c Release -o /app/publish
+
+
+# -------------------
 # Runtime stage
 # -------------------
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
@@ -40,3 +55,4 @@ ENV LD_LIBRARY_PATH=/app:/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH
 
 # Entrypoint
 ENTRYPOINT ["dotnet", "i2t-Api.dll"]
+
