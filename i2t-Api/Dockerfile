@@ -27,6 +27,7 @@ RUN apt-get update && apt-get install -y \
 RUN git clone --branch 1.82.0 https://github.com/DanBloomberg/leptonica.git /tmp/leptonica \
     && cd /tmp/leptonica \
     && ./autogen.sh && ./configure && make && make install \
+    && cp /usr/local/lib/liblept.so.5 /usr/local/lib/libleptonica-1.82.0.so \
     && ldconfig \
     && rm -rf /tmp/leptonica
 
