@@ -12,17 +12,22 @@ RUN dotnet publish "i2t-Api.csproj" -c Release -o /app/publish
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
 
-# Install OCR + Hunspell deps
+# Install build deps, Tesseract, Hunspell
 RUN apt-get update && apt-get install -y \
+    autoconf automake libtool pkg-config \
+    build-essential \
     tesseract-ocr \
     libtesseract-dev \
-    libleptonica-dev \
     hunspell \
     hunspell-en-us \
     && rm -rf /var/lib/apt/lists/*
 
-# Symlink to match Tesseract .NET wrapper expectations
-RUN ln -s /usr/lib/x86_64-linux-gnu/liblept.so.5 /app/libleptonica-1.82.0.so
+# Build Leptonica 1.82.0 from source
+RUN git clone --branch 1.82.0 https://github.com/DanBloomberg/leptonica.git /tmp/leptonica \
+    && cd /tmp/leptonica \
+    && ./autogen.sh && ./configure && make && make install \
+    && ldconfig \
+    && rm -rf /tmp/leptonica
 
 # Copy published app
 COPY --from=build /app/publish .
@@ -33,6 +38,6 @@ COPY i2t-Api/Dictionaries /app/Dictionaries
 
 # OCR env vars
 ENV TESSDATA_PREFIX=/app/tessdata
-ENV LD_LIBRARY_PATH=/app:/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH
+ENV LD_LIBRARY_PATH=/usr/local/lib:/app:/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH
 
 ENTRYPOINT ["dotnet", "i2t-Api.dll"]
