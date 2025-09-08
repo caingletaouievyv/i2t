@@ -33,7 +33,7 @@ RUN git clone --branch 1.82.0 https://github.com/DanBloomberg/leptonica.git /tmp
     && ./configure \
     && make \
     && make install \
-    && cp /usr/local/lib/liblept.so.5 /usr/local/lib/libleptonica-1.82.0.so \
+    && cp /usr/local/lib/liblept.so.5 /usr/lib/x86_64-linux-gnu/libleptonica-1.82.0.so \
     && ldconfig \
     && rm -rf /tmp/leptonica
 
