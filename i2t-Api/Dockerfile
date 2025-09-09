@@ -29,20 +29,22 @@ RUN git clone --branch 1.82.0 https://github.com/DanBloomberg/leptonica.git /tmp
     && ./configure \
     && make \
     && make install \
-    # Copy & rename the library to EXACT filename expected by InteropDotNet
-    && cp /usr/local/lib/liblept.so.5 /usr/local/lib/libleptonica-1.82.0.so \
+    # Copy & rename directly into /app (publish dir)
     && cp /usr/local/lib/liblept.so.5 /app/libleptonica-1.82.0.so \
-    && chmod 755 /usr/local/lib/libleptonica-1.82.0.so /app/libleptonica-1.82.0.so \
+    && chmod 755 /app/libleptonica-1.82.0.so \
     && ldconfig \
     && rm -rf /tmp/leptonica
 
 # Copy published app from build stage
-COPY --from=build /app/publish ./
+COPY --from=build /app/publish ./ 
+
+# Copy tessdata and dictionaries
 COPY i2t-Api/tessdata /app/tessdata
 COPY i2t-Api/Dictionaries /app/Dictionaries
 
 # OCR environment variables
 ENV TESSDATA_PREFIX=/app/tessdata
-ENV LD_LIBRARY_PATH=/usr/local/lib:/app:$LD_LIBRARY_PATH
+ENV LD_LIBRARY_PATH=/app:$LD_LIBRARY_PATH
 
-ENTRYPOINT ["dotnet", "i2t-Api.dll"]
+# Debug: list contents before running app
+CMD ls -l /app && echo "Starting OCR API..." && dotnet i2t-Api.dll
