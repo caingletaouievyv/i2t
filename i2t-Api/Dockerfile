@@ -29,9 +29,9 @@ RUN git clone --branch 1.82.0 https://github.com/DanBloomberg/leptonica.git /tmp
     && ./configure \
     && make \
     && make install \
-    # Copy & link into system lib path so .NET loader finds it
-    && cp /usr/local/lib/liblept.so.5 /usr/lib/x86_64-linux-gnu/libleptonica-1.82.0.so \
-    && ln -sf /usr/local/lib/liblept.so.5 /usr/lib/x86_64-linux-gnu/liblept.so.5 \
+    # Copy & rename directly into /app (publish dir)
+    && cp /usr/local/lib/liblept.so.5 /app/libleptonica-1.82.0.so \
+    && chmod 755 /app/libleptonica-1.82.0.so \
     && ldconfig \
     && rm -rf /tmp/leptonica
 
@@ -44,8 +44,7 @@ COPY i2t-Api/Dictionaries /app/Dictionaries
 
 # OCR environment variables
 ENV TESSDATA_PREFIX=/app/tessdata
-
-ENTRYPOINT ["dotnet", "i2t-Api.dll"]
+ENV LD_LIBRARY_PATH=/app:$LD_LIBRARY_PATH
 
 # Debug: list contents before running app
 CMD ls -l /app && echo "Starting OCR API..." && dotnet i2t-Api.dll
