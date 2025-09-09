@@ -29,11 +29,15 @@ RUN git clone --branch 1.82.0 https://github.com/DanBloomberg/leptonica.git /tmp
     && ./configure \
     && make \
     && make install \
-    # Create system-wide symlinks for the expected name
-    && ln -sf /usr/local/lib/liblept.so.5 /usr/lib/x86_64-linux-gnu/libleptonica-1.82.0.so \
+    # Ensure the expected filename exists in both system + app
+    && ln -sf /usr/local/lib/liblept.so.5 /usr/local/lib/libleptonica-1.82.0.so \
     && ln -sf /usr/local/lib/liblept.so.5 /app/libleptonica-1.82.0.so \
+    # Refresh linker cache
     && ldconfig \
-    && ls -l /usr/local/lib/ /usr/lib/x86_64-linux-gnu/ /app \
+    # Debug: list files + check resolution
+    && echo "== USR/LOCAL/LIB ==" && ls -l /usr/local/lib | grep lept \
+    && echo "== APP DIR ==" && ls -l /app | grep lept \
+    && ldd /usr/local/lib/liblept.so.5 \
     && rm -rf /tmp/leptonica
 
 # Copy published app from build stage
