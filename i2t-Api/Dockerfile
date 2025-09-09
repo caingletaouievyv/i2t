@@ -27,11 +27,10 @@ COPY i2t-Api/tessdata /app/tessdata
 COPY i2t-Api/Dictionaries /app/Dictionaries
 ENV TESSDATA_PREFIX=/app/tessdata
 
-# Ensure platform probing folders exist and put the exact filename the wrapper expects there
+# Ensure platform probing folders exist and copy the lib where Interop expects
 RUN mkdir -p /app/x64 /app/x86 \
- && if [ -f /usr/local/lib/liblept.so.5 ]; then REAL=/usr/local/lib/liblept.so.5; \
-    elif [ -f /usr/lib/x86_64-linux-gnu/liblept.so.5 ]; then REAL=/usr/lib/x86_64-linux-gnu/liblept.so.5; \
-    else echo "ERROR: liblept.so.5 not found"; exit 1; fi \
+ && REAL=$(find /usr/lib /usr/local/lib -maxdepth 2 -name "liblept.so*" | head -n1) \
+ && echo "Using $REAL" \
  && cp -f "$REAL" /app/libleptonica-1.82.0.so \
  && cp -f "$REAL" /app/x64/libleptonica-1.82.0.so \
  && cp -f "$REAL" /app/x86/libleptonica-1.82.0.so \
