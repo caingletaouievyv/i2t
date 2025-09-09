@@ -10,41 +10,33 @@ RUN dotnet restore "i2t-Api.csproj"
 COPY i2t-Api/. ./
 RUN dotnet publish "i2t-Api.csproj" -c Release -o /app/publish
 
-# -------------------
-# Runtime stage
-# -------------------
+# Runtime stage (snippet)
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
 
-# Install runtime deps + build deps for Leptonica
+# install runtime deps
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    git autoconf automake libtool pkg-config build-essential \
-    tesseract-ocr hunspell hunspell-en-us \
+    tesseract-ocr libtesseract-dev libleptonica-dev hunspell hunspell-en-us \
     && rm -rf /var/lib/apt/lists/*
 
-# Build and install Leptonica 1.82.0
-RUN git clone --branch 1.82.0 https://github.com/DanBloomberg/leptonica.git /tmp/leptonica \
-    && cd /tmp/leptonica \
-    && ./autogen.sh \
-    && ./configure \
-    && make \
-    && make install \
-    # Copy & rename directly into /app (publish dir)
-    && cp /usr/local/lib/liblept.so.5 /app/libleptonica-1.82.0.so \
-    && chmod 755 /app/libleptonica-1.82.0.so \
-    && ldconfig \
-    && rm -rf /tmp/leptonica
+# copy published app from build stage
+COPY --from=build /app/publish .
 
-# Copy published app from build stage
-COPY --from=build /app/publish ./ 
-
-# Copy tessdata and dictionaries
+# Copy tessdata/dicts as you already do
 COPY i2t-Api/tessdata /app/tessdata
 COPY i2t-Api/Dictionaries /app/Dictionaries
-
-# OCR environment variables
 ENV TESSDATA_PREFIX=/app/tessdata
-ENV LD_LIBRARY_PATH=/app:$LD_LIBRARY_PATH
 
-# Debug: list contents before running app
-CMD ls -l /app && echo "Starting OCR API..." && dotnet i2t-Api.dll
+# Ensure platform probing folders exist and put the exact filename the wrapper expects there
+RUN mkdir -p /app/x64 /app/x86 \
+ && if [ -f /usr/local/lib/liblept.so.5 ]; then REAL=/usr/local/lib/liblept.so.5; \
+    elif [ -f /usr/lib/x86_64-linux-gnu/liblept.so.5 ]; then REAL=/usr/lib/x86_64-linux-gnu/liblept.so.5; \
+    else echo "ERROR: liblept.so.5 not found"; exit 1; fi \
+ && cp -f "$REAL" /app/libleptonica-1.82.0.so \
+ && cp -f "$REAL" /app/x64/libleptonica-1.82.0.so \
+ && cp -f "$REAL" /app/x86/libleptonica-1.82.0.so \
+ && chmod 755 /app/libleptonica-1.82.0.so /app/x64/libleptonica-1.82.0.so /app/x86/libleptonica-1.82.0.so
+
+ENV LD_LIBRARY_PATH=/app:/app/x64:$LD_LIBRARY_PATH
+
+ENTRYPOINT ["dotnet", "i2t-Api.dll"]
