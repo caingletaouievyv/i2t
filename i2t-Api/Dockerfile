@@ -29,15 +29,11 @@ RUN git clone --branch 1.82.0 https://github.com/DanBloomberg/leptonica.git /tmp
     && ./configure \
     && make \
     && make install \
-    # Ensure the expected filename exists in both system + app
-    && ln -sf /usr/local/lib/liblept.so.5 /usr/local/lib/libleptonica-1.82.0.so \
-    && ln -sf /usr/local/lib/liblept.so.5 /app/libleptonica-1.82.0.so \
-    # Refresh linker cache
+    # Copy & rename the library to EXACT filename expected by InteropDotNet
+    && cp /usr/local/lib/liblept.so.5 /usr/local/lib/libleptonica-1.82.0.so \
+    && cp /usr/local/lib/liblept.so.5 /app/libleptonica-1.82.0.so \
+    && chmod 755 /usr/local/lib/libleptonica-1.82.0.so /app/libleptonica-1.82.0.so \
     && ldconfig \
-    # Debug: list files + check resolution
-    && echo "== USR/LOCAL/LIB ==" && ls -l /usr/local/lib | grep lept \
-    && echo "== APP DIR ==" && ls -l /app | grep lept \
-    && ldd /usr/local/lib/liblept.so.5 \
     && rm -rf /tmp/leptonica
 
 # Copy published app from build stage
