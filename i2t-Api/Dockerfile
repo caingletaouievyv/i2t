@@ -47,6 +47,6 @@ COPY i2t-Api/Dictionaries /app/Dictionaries
 
 # OCR environment variables
 ENV TESSDATA_PREFIX=/app/tessdata
-ENV LD_LIBRARY_PATH=/app:$LD_LIBRARY_PATH
+ENV LD_LIBRARY_PATH=/usr/local/lib:/app:$LD_LIBRARY_PATH
 
 ENTRYPOINT ["dotnet", "i2t-Api.dll"]
