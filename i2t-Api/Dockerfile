@@ -39,9 +39,9 @@ RUN mkdir -p /app/x64 /app/x86 \
  && cp -f "$REAL_TESS" /app/x86/libtesseract50.so \
  && chmod 755 /app/*.so /app/x64/*.so /app/x86/*.so \
  && ln -s /lib/x86_64-linux-gnu/libdl.so.2 /usr/lib/x86_64-linux-gnu/libdl.so || true \
- && echo "ldd on libtesseract50.so:" \
+ #&& echo "ldd on libtesseract50.so:" \
  && ldd /app/x64/libtesseract50.so || true \
- && echo "ldd on libleptonica:" \
+ #&& echo "ldd on libleptonica:" \
  && ldd /app/x64/libleptonica-1.82.0.so || true \
  && ls -l /app /app/x64 /app/x86
 
