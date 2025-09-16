@@ -2,7 +2,7 @@
 
 import { useRef, useEffect, useState } from "react";
 import axios from "axios";
-import { OCR_SINGLE_URL } from "../config/apiConfig";
+import { OCR_SINGLE_URL, authHeaders } from "../config/apiConfig";
 
 export default function BoundingBoxCanvas({
   imageSrc,
@@ -64,8 +64,9 @@ export default function BoundingBoxCanvas({
     formData.append("height", contextMenu.box.height);
 
     try {
-      const res = await axios.post(OCR_SINGLE_URL, formData);
-      // if (onOcrResult) onOcrResult(res.data, contextMenu.index);
+      const res = await axios.post(OCR_SINGLE_URL, formData, {
+        headers: authHeaders(),
+      });
       
       if (onOcrResult) {
         onOcrResult(res.data, contextMenu.index);

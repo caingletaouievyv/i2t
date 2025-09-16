@@ -3,7 +3,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { preprocessImage } from "../util/imagePreprocessor";
-import { OCR_SINGLE_URL, OCR_MULTI_URL} from "../config/apiConfig";
+import { OCR_SINGLE_URL, OCR_MULTI_URL, authHeaders} from "../config/apiConfig";
 import LanguageSelector from "./LanguageSelector";
 import BoundingBoxCanvas from "./BoundingBoxCanvas";
 import ResultDisplay from "./ResultDisplay";
@@ -62,7 +62,9 @@ export default function ImageUploaderAuto({ onError }) {
       formData.append("image", imageBlob, "preprocessed.png");
       formData.append("language", language);
 
-      const res = await axios.post(OCR_SINGLE_URL, formData);
+      const res = await axios.post(OCR_SINGLE_URL, formData, {
+        headers: authHeaders(),
+      });
       setOcrText(res.data.text || "");
       setOcrBoxes(res.data.boxes || []);
     } catch (err) {
@@ -81,12 +83,12 @@ export default function ImageUploaderAuto({ onError }) {
       images.forEach((file) => formData.append("images", file));
       formData.append("language", language);
 
-      const res = await axios.post(OCR_MULTI_URL, formData);
+      const res = await axios.post(OCR_MULTI_URL, formData, {
+        headers: authHeaders(),
+      });
+      
       if (res.data.results && Array.isArray(res.data.results)) {
-        // Join all texts with spacing
         setOcrText(res.data.results.map(r => r.text).join("\n\n"));
-
-        // Flatten all boxes into one array
         setOcrBoxes(res.data.results.flatMap(r => r.boxes || []));
       } else {
         setOcrText("No text found.");
