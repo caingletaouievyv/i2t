@@ -2,12 +2,16 @@
 
 using i2t.Models;
 using i2t.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace i2t.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [EnableRateLimiting("fixed")]
+    [Authorize]
     public class OcrController : ControllerBase
     {
         private readonly IOcrService _ocrService;
