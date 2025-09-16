@@ -34,12 +34,19 @@ namespace i2t.Controllers
 
         private string GenerateJwtToken(string username)
         {
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
+            var keyString = _config["Jwt:Key"]
+                ?? throw new InvalidOperationException("Jwt:Key is not configured.");
+            var issuer = _config["Jwt:Issuer"]
+                ?? throw new InvalidOperationException("Jwt:Issuer is not configured.");
+            var audience = _config["Jwt:Audience"]
+                ?? throw new InvalidOperationException("Jwt:Audience is not configured.");
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(keyString));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var token = new JwtSecurityToken(
-                issuer: _config["Jwt:Issuer"],
-                audience: _config["Jwt:Audience"],
+                issuer: issuer,
+                audience: audience,
                 claims: new[] { new Claim(ClaimTypes.Name, username) },
                 expires: DateTime.UtcNow.AddHours(2),
                 signingCredentials: creds);
