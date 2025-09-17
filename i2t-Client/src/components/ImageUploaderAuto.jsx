@@ -17,6 +17,8 @@ export default function ImageUploaderAuto({ onError }) {
   const [ocrText, setOcrText] = useState("");
   const [showBoxes, setShowBoxes] = useState(true);
 
+  const isProd = import.meta.env.MODE === "production";
+  
   const handleFiles = async (fileList) => {
     setOcrBoxes([]);
     setOcrText("");
@@ -131,9 +133,6 @@ export default function ImageUploaderAuto({ onError }) {
         className={`p-8 border-2 rounded-2xl text-center transition-all ${
           dragActive ? "border-blue-500 bg-blue-50" : "border-gray-300"
         }`}
-        // className={`p-8 border-2 rounded-2xl text-center transition-all flex flex-col items-center justify-center ${
-        //   dragActive ? "border-blue-500 bg-blue-50" : "border-gray-300"
-        // }`}
       >
         <p className="text-lg">Drag and drop image(s) here</p>
         <p className="text-sm text-gray-500 mt-1">JPG, PNG, etc. or click below</p>
@@ -146,9 +145,13 @@ export default function ImageUploaderAuto({ onError }) {
           className="mt-4 block w-full text-sm text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-100 file:text-blue-700 hover:file:bg-blue-200"
         />
 
-        {loading && <p className="text-blue-500 mt-4">Processing...</p>}
-
-
+        {loading && (
+          <p className="text-blue-500 mt-4">
+            {isProd
+              ? "Waking server(Render)... (this may take a minute)"
+              : "Processing..."}
+          </p>
+        )}
         
         {imagePreview && ocrBoxes.length > 0 && (
           <div className="mt-6">

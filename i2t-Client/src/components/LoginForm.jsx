@@ -88,7 +88,7 @@ export default function LoginForm({ onLoginSuccess, onError }) {
       >
         {loading
           ? isProd
-            ? "Waking server... (this may take a minute)"
+            ? "Waking server(Render)... (this may take a minute)"
             : "Logging in..."
           : "Login"}
       </button>
