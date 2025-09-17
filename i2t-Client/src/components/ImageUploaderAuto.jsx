@@ -55,6 +55,20 @@ export default function ImageUploaderAuto({ onError }) {
     handleFiles(e.target.files);
   };
 
+  const retryRequest = async (fn, retries = 2, delay = 3000) => {
+    for (let i = 0; i <= retries; i++) {
+      try {
+        return await fn();
+      } catch (err) {
+        if (i < retries) {
+          await new Promise(res => setTimeout(res, delay));
+        } else {
+          throw err;
+        }
+      }
+    }
+  };
+
   const uploadSingle = async (imageBlob) => {
     try {
       setLoading(true);
@@ -64,14 +78,18 @@ export default function ImageUploaderAuto({ onError }) {
       formData.append("image", imageBlob, "preprocessed.png");
       formData.append("language", language);
 
-      const res = await axios.post(OCR_SINGLE_URL, formData, {
-        headers: authHeaders(),
-      });
+      const res = await retryRequest(() =>
+        axios.post(OCR_SINGLE_URL, formData, { headers: authHeaders() })
+      );
+
       setOcrText(res.data.text || "");
       setOcrBoxes(res.data.boxes || []);
     } catch (err) {
-      const msg = err.response?.data?.error || "OCR failed";
-      onError(msg);
+      if (!err.response || [502, 503].includes(err.response?.status)) {
+        onError("Server is waking up... please wait a few seconds.");
+      } else {
+        onError(err.response?.data?.error || "OCR failed");
+      }
     } finally {
       setLoading(false);
     }
@@ -85,9 +103,13 @@ export default function ImageUploaderAuto({ onError }) {
       images.forEach((file) => formData.append("images", file));
       formData.append("language", language);
 
-      const res = await axios.post(OCR_MULTI_URL, formData, {
-        headers: authHeaders(),
-      });
+      // const res = await axios.post(OCR_MULTI_URL, formData, {
+      //   headers: authHeaders(),
+      // });
+
+      const res = await retryRequest(() =>
+        axios.post(OCR_MULTI_URL, formData, { headers: authHeaders() })
+      );
       
       if (res.data.results && Array.isArray(res.data.results)) {
         setOcrText(res.data.results.map(r => r.text).join("\n\n"));
@@ -97,8 +119,11 @@ export default function ImageUploaderAuto({ onError }) {
         setOcrBoxes([]);
       }
     } catch (err) {
-      const msg = err.response?.data?.error || "OCR failed";
-      onError(msg);
+      if (!err.response || [502, 503].includes(err.response?.status)) {
+        onError("Server is waking up... please wait a few seconds.");
+      } else {
+        onError(err.response?.data?.error || "OCR failed");
+      }
     } finally {
       setLoading(false);
     }
