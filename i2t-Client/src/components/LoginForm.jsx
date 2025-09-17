@@ -1,5 +1,6 @@
 // i2t-client/src/components/LoginForm.jsx
 
+// i2t-client/src/components/LoginForm.jsx
 import { useState } from "react";
 import { login, logout, isAuthenticated } from "../services/authService";
 
@@ -7,6 +8,8 @@ export default function LoginForm({ onLoginSuccess, onError }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const isProd = import.meta.env.MODE === "production";
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -83,7 +86,11 @@ export default function LoginForm({ onLoginSuccess, onError }) {
         disabled={loading}
         className="w-full px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 transition disabled:opacity-50"
       >
-        {loading ? "Logging in..." : "Login"}
+        {loading
+          ? isProd
+            ? "Waking server... (this may take a minute)"
+            : "Logging in..."
+          : "Login"}
       </button>
     </form>
   );
