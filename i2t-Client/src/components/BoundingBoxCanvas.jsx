@@ -63,7 +63,7 @@ export default function BoundingBoxCanvas({
     formData.append("y", contextMenu.box.y);
     formData.append("width", contextMenu.box.width);
     formData.append("height", contextMenu.box.height);
-    formData.append("useDictionary", useDictionary);
+     formData.append("useDictionary", useDictionary.toString());
 
     try {
       const res = await axios.post(OCR_SINGLE_URL, formData, {
@@ -140,6 +140,13 @@ export default function BoundingBoxCanvas({
             minWidth: "200px",
           }}
         >
+          <button
+            onClick={handleCopy}
+            className="block w-full text-left px-3 py-2 hover:bg-gray-700"
+          >
+            📋 Copy
+          </button>
+
           <div className="px-3 py-2 border-b border-gray-600">
             <label className="flex items-center gap-2">
               <input
@@ -147,7 +154,12 @@ export default function BoundingBoxCanvas({
                 checked={useDictionary}
                 onChange={(e) => setUseDictionary(e.target.checked)}
               />
-              <span>Use Dictionary</span>
+              <span
+                title="Applies Hunspell dictionary to auto-correct low-confidence OCR results"
+              >
+                Enable Hunspell corrections
+              </span>
+
             </label>
           </div>
 
