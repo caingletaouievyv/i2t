@@ -29,12 +29,13 @@ namespace i2t.Controllers
                                                     [FromForm] int? x = null,
                                                     [FromForm] int? y = null,
                                                     [FromForm] int? width = null,
-                                                    [FromForm] int? height = null)
+                                                    [FromForm] int? height = null,
+                                                    [FromForm] bool useDictionary = false)
         {
             if (image == null || image.Length == 0)
                 return BadRequest("No image uploaded.");
             
-            OcrResult result = await _ocrService.ExtractTextAsync(image, language, version, expandPixels, x, y, width, height);
+            OcrResult result = await _ocrService.ExtractTextAsync(image, language, version, expandPixels, x, y, width, height, useDictionary);
             return Ok(result);
         }
 

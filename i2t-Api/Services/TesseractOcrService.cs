@@ -1,11 +1,12 @@
 ﻿// i2t-Api/Services/TesseractOcrService.cs
 
-using Tesseract;
 using i2t.Models;
-using WeCantSpell.Hunspell;
+using Microsoft.AspNetCore.Mvc;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
+using Tesseract;
+using WeCantSpell.Hunspell;
 
 namespace i2t.Services
 {
@@ -95,7 +96,7 @@ namespace i2t.Services
                         var confidence = iter.GetConfidence(PageIteratorLevel.Word);
                         var finalWord = rawWord;
 
-                        if (useDictionary && confidence < 90 && version != 1)
+                        if (useDictionary && version != 1)
                         {
                             EnsureDictionaryLoaded();
                             if (_hunspell != null)
