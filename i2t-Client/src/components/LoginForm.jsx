@@ -1,6 +1,5 @@
 // i2t-client/src/components/LoginForm.jsx
 
-// i2t-client/src/components/LoginForm.jsx
 import { useState } from "react";
 import { login, logout, isAuthenticated } from "../services/authService";
 

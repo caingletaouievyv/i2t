@@ -6,7 +6,7 @@ import LoginForm from "./components/LoginForm";
 import { isAuthenticated } from "./services/authService";
 
 export default function App() {
-  const [ocrText, setOcrText] = useState("");
+  const [setOcrText] = useState("");
   const [error, setError] = useState("");
   const [loggedIn, setLoggedIn] = useState(isAuthenticated());
 

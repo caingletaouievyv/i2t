@@ -103,10 +103,6 @@ export default function ImageUploaderAuto({ onError }) {
       images.forEach((file) => formData.append("images", file));
       formData.append("language", language);
 
-      // const res = await axios.post(OCR_MULTI_URL, formData, {
-      //   headers: authHeaders(),
-      // });
-
       const res = await retryRequest(() =>
         axios.post(OCR_MULTI_URL, formData, { headers: authHeaders() })
       );
