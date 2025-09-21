@@ -39,14 +39,24 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
-builder.Services.AddRateLimiter(_ => _
-    .AddFixedWindowLimiter("fixed", options =>
+builder.Services.AddRateLimiter(_ =>
+{
+    _.AddFixedWindowLimiter("fixed", options =>
     {
         options.PermitLimit = 10;
         options.Window = TimeSpan.FromSeconds(30);
         options.QueueProcessingOrder = System.Threading.RateLimiting.QueueProcessingOrder.OldestFirst;
         options.QueueLimit = 2;
-    }));
+    });
+
+    _.AddFixedWindowLimiter("auth", options =>
+    {
+        options.PermitLimit = 5;
+        options.Window = TimeSpan.FromMinutes(1);
+        options.QueueLimit = 0;
+    });
+});
+
 
 builder.Services.AddAuthorization();
 

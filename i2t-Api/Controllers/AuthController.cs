@@ -2,6 +2,7 @@
 
 using i2t.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -9,6 +10,7 @@ using System.Text;
 
 namespace i2t.Controllers
 {
+    [EnableRateLimiting("auth")]
     [ApiController]
     [Route("api/[controller]")]
     public class AuthController : ControllerBase
