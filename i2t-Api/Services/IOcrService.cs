@@ -14,6 +14,7 @@ namespace i2t.Services
             int? x = null,
             int? y = null,
             int? width = null,
-            int? height = null);
+            int? height = null,
+            bool useDictionary = false);
     }
 }

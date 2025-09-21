@@ -11,7 +11,7 @@ namespace i2t.Services
 {
     public class TesseractOcrService : IOcrService
     {
-        private static readonly WordList _hunspell;
+        private static WordList? _hunspell;
 
         static TesseractOcrService()
         {
@@ -31,7 +31,8 @@ namespace i2t.Services
             int? x = null,
             int? y = null,
             int? width = null,
-            int? height = null)
+            int? height = null,
+            bool useDictionary = false)
         {
             try
             {
@@ -92,7 +93,14 @@ namespace i2t.Services
                     {
                         var rawWord = iter.GetText(PageIteratorLevel.Word) ?? string.Empty;
                         var confidence = iter.GetConfidence(PageIteratorLevel.Word);
-                        var finalWord = (confidence < 90 && version != 1) ? CorrectWord(rawWord) : rawWord;
+                        var finalWord = rawWord;
+
+                        if (useDictionary && confidence < 90 && version != 1)
+                        {
+                            EnsureDictionaryLoaded();
+                            if (_hunspell != null)
+                                finalWord = CorrectWord(rawWord);
+                        }
 
                         result.Boxes.Add(new OcrBox
                         {
@@ -119,11 +127,11 @@ namespace i2t.Services
             }
         }
 
-
-
         private string CorrectWord(string word)
         {
             if (string.IsNullOrWhiteSpace(word)) return word;
+
+            if (_hunspell == null) return word;
 
             var trimmed = word.Trim();
             var prefix = new string(trimmed.TakeWhile(char.IsPunctuation).ToArray());
@@ -147,5 +155,21 @@ namespace i2t.Services
 
             return word;
         }
+
+
+        private static void EnsureDictionaryLoaded()
+        {
+            if (_hunspell != null) return;
+
+            var basePath = AppContext.BaseDirectory;
+            var affFile = Path.Combine(basePath, "Dictionaries", "en_US.aff");
+            var dicFile = Path.Combine(basePath, "Dictionaries", "en_US.dic");
+
+            if (File.Exists(dicFile) && File.Exists(affFile))
+            {
+                _hunspell = WordList.CreateFromFiles(dicFile, affFile);
+            }
+        }
+
     }
 }
