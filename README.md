@@ -16,7 +16,9 @@ Designed for **rapid prototyping and scalable OCR workflows**.
 ## Live Demo / API  
 - **Frontend:** [https://i2t.netlify.app/](https://i2t.netlify.app/)  
 - **Backend:** [https://i2t-27gz.onrender.com](https://i2t-27gz.onrender.com)  
-
+- Credentials
+- Username: demo
+- Password: password
 ---
 
 ## Repository  
