@@ -55,6 +55,9 @@ namespace i2t.Controllers
 
             return Ok(new { results });
         }
+
+        [HttpGet("isServerAwake")]
+        public IActionResult Get() => Ok(new { status = "ok" });
     }
 }
 
