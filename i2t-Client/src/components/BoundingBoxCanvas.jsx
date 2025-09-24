@@ -90,6 +90,12 @@ export default function BoundingBoxCanvas({
     return () => window.removeEventListener("click", closeOnClick);
   }, []);
 
+  useEffect(() => {
+    const closeOnClick = () => closeMenu();
+    window.addEventListener("click", closeOnClick);
+    return () => window.removeEventListener("click", closeOnClick);
+  }, []);
+
   return (
     <div className="relative inline-block max-w-full overflow-x-auto">
       <img
@@ -139,6 +145,7 @@ export default function BoundingBoxCanvas({
             left: `${contextMenu.x}px`,
             minWidth: "200px",
           }}
+          onClick={(e) => e.stopPropagation()}
         >
           <button
             onClick={handleCopy}
@@ -154,12 +161,9 @@ export default function BoundingBoxCanvas({
                 checked={useDictionary}
                 onChange={(e) => setUseDictionary(e.target.checked)}
               />
-              <span
-                title="Applies Hunspell dictionary to auto-correct low-confidence OCR results"
-              >
+              <span title="Applies Hunspell dictionary to auto-correct low-confidence OCR results">
                 Enable Hunspell corrections
               </span>
-
             </label>
           </div>
 
@@ -177,6 +181,7 @@ export default function BoundingBoxCanvas({
           </button>
         </div>
       )}
+
     </div>
   );
 }

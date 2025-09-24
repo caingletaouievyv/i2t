@@ -1,16 +1,16 @@
 // i2t-client/src/components/ImageUploaderAuto.jsx
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import { preprocessImage } from "../util/imagePreprocessor";
-import { OCR_SINGLE_URL, OCR_MULTI_URL, authHeaders} from "../config/apiConfig";
+import { OCR_SINGLE_URL, OCR_MULTI_URL, authHeaders, OCR_ISSERVERAWAKE_URL} from "../config/apiConfig";
 import LanguageSelector from "./LanguageSelector";
 import BoundingBoxCanvas from "./BoundingBoxCanvas";
 import ResultDisplay from "./ResultDisplay";
 
 export default function ImageUploaderAuto({ onError }) {
   const [dragActive, setDragActive] = useState(false);
-  const [loading, setLoading] = useState(false);
+
   const [language, setLanguage] = useState("eng");
   const [imagePreview, setImagePreview] = useState(null);
   const [ocrBoxes, setOcrBoxes] = useState([]);
@@ -19,6 +19,9 @@ export default function ImageUploaderAuto({ onError }) {
 
   const isProd = import.meta.env.MODE === "production";
   
+  const [loading, setLoading] = useState(false);
+  const [serverAwake, setServerAwake] = useState(false);
+
   const handleFiles = async (fileList) => {
     setOcrBoxes([]);
     setOcrText("");
@@ -140,6 +143,19 @@ export default function ImageUploaderAuto({ onError }) {
     });
   };
 
+  useEffect(() => {
+    const checkServer = async () => {
+      try {
+        await axios.get(OCR_ISSERVERAWAKE_URL, { headers: authHeaders() });
+        setServerAwake(true);
+      } catch (err) {
+        console.warn("Server not awake yet");
+        setServerAwake(false);
+      }
+    };
+    checkServer();
+  }, []);
+
   return (
     <div>
       <LanguageSelector selected={language} onChange={setLanguage} />
@@ -168,12 +184,12 @@ export default function ImageUploaderAuto({ onError }) {
 
         {loading && (
           <p className="text-blue-500 mt-4">
-            {isProd
-              ? "Waking server(Render)... (this may take a minute)"
-              : "Processing..."}
+            {!serverAwake
+              ? "Waking server (Render)... this may take up to a minute"
+              : "Processing request..."}
           </p>
         )}
-        
+
         {imagePreview && ocrBoxes.length > 0 && (
           <div className="mt-6">
             <div className="flex justify-between items-center mb-2">
