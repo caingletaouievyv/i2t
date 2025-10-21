@@ -19,6 +19,19 @@ Designed for **rapid prototyping and scalable OCR workflows**.
 - **Credentials:**
    - Username: demo
    - Password: password
+ 
+### UI
+**User Dashboard**
+![Demo 1 – UI](./i2t/demo1_UI.gif)
+
+### OCR Context Menu
+**Context Menu Actions**
+![Demo 2 – Context Menu](./i2t/demo2_ContextMenu.gif)
+
+### Multi-File OCR Processing
+**Multi-File OCR**
+![Demo 3 – MultipleFiles](./i2t/demo3_MultipleFiles.gif)
+
 ---
 
 ## Repository  
